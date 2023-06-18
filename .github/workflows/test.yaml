@@ -1,24 +1,6 @@
 name: Test
 
-on:
-  push:
-    branches:
-      - master
-    paths-ignore:
-      - '.husky'
-      - '.vscode'
-      - '**.md'
-      - 'scripts/**'
-      - 'packages/docs/**'
-  pull_request:
-    branches:
-      - master
-    paths-ignore:
-      - '.husky'
-      - '.vscode'
-      - '**.md'
-      - 'scripts/**'
-      - 'packages/docs/**'
+on: workflow_dispatch
 
 jobs:
   test-node:
@@ -111,15 +93,6 @@ jobs:
       - name: Collect code coverage report
         run: pnpm exec nyc report -t .nyc_output --reporter=lcov
 
-      - name: Upload E2E test coverage results
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./.coverage/lcov.info
-          flags: e2etest
-          name: blocksuite
-          fail_ci_if_error: false
-
       - name: Upload test results
         if: ${{ failure() }}
         uses: actions/upload-artifact@v2
@@ -145,15 +118,6 @@ jobs:
 
       - name: Run unit test
         run: pnpm test:unit:coverage
-
-      - name: Upload unit test coverage results
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./.coverage/global/lcov.info,./.coverage/store/lcov.info
-          flags: unittest
-          name: blocksuite
-          fail_ci_if_error: false
 
   virgo-e2e-test:
     name: Virgo E2E test
